@@ -1,6 +1,9 @@
 
 
 var markers=[];
+var redColour = '#FF0000';
+var greenColour = '#1ee804';
+var polygon = null;
 
 $( "#button" ).on("click", notify);
 $( "#buttonDelete" ).on("click",deleteAllMarkers);
@@ -36,18 +39,15 @@ function initMap() {
         // Construct the polygon.
         var bermudaTriangle = new google.maps.Polygon({
           paths: triangleCoords,
-          strokeColor: '#FF0000',
+          strokeColor: greenColour,
           strokeOpacity: 0.8,
           strokeWeight: 3,
-          fillColor: '#FF0000',
+          fillColor: greenColour ,
           fillOpacity: 0.35
         });
         bermudaTriangle.setMap(map);
 
-        // Add a listener for the click event.
-    
-
-        infoWindow = new google.maps.InfoWindow;
+     
 }
 
 function placeMarker(map, location) {
@@ -56,20 +56,44 @@ function placeMarker(map, location) {
     map: map
   });
   markers.push(marker);
-  $.getJSON(url,data=>{
-    info=''
-    var infowindow = new google.maps.InfoWindow({
-        content: info
-    });
-    infowindow.open(map,marker);
-  });
+  var listOfMarkers = convertMarkers(markers);
+  if(markers.length > 2){
+       if(polygon != null){
+	polygon.setMap(null);
+       }
+       var colour = colourChoose(listOfMarkers);
+       polygon = new google.maps.Polygon({
+          paths: listOfMarkers,
+          strokeColor: colour,
+          strokeOpacity: 0.8,
+          strokeWeight: 3,
+          fillColor: colour,
+          fillOpacity: 0.35
+        });
+        polygon.setMap(map);
+   }
 }
 
 function deleteAllMarkers(){
   for(var i=0;i<markers.length;i++){
     markers[i].setMap(null);
   }
+  if(polygon != null){
+	polygon.setMap(null);
+       }
   markers=[];
+}
+
+function convertMarkers(listOfMarkers){
+  newMarkers = [];
+  listOfMarkers.forEach(function (item) {
+       newMarkers.push({lat: item.getPosition().lat(), lng: item.getPosition().lng()});
+  });
+  return newMarkers;
+}
+
+function colourChoose(arr){
+   return (arr.length % 2 == 0) ? redColour : greenColour;
 }
 
 function fromKelvinToCelsium(temperature){
