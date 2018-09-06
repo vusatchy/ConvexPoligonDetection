@@ -87,7 +87,7 @@ function deleteAllMarkers(){
 function convertMarkers(listOfMarkers){
   newMarkers = [];
   listOfMarkers.forEach(function (item) {
-       newMarkers.push({lat: item.getPosition().lat(), lng: item.getPosition().lng()});
+       newMarkers.unshift({lat: item.getPosition().lat(), lng: item.getPosition().lng()});
   });
   return newMarkers;
 }
